@@ -8,5 +8,7 @@ RUN apk add py-pip
 COPY requirements.txt /app
 RUN pip install -r requirements.txt
 
+COPY templates /app/templates
+
 COPY acts_flask.py /app
 CMD python acts_flask.py
