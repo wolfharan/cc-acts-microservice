@@ -37,6 +37,8 @@ def crashserver():
 @app.route("/api/v1/_count", methods=['GET'])
 def reqcounter():
     with reqcount.get_lock():
+        if crash==1:
+            response = app.response_class(response=json.dumps({}), status=500, mimetype='application/json')
         if request.method== 'GET':
             response = app.response_class(response=json.dumps([reqcount.value]), status=200, mimetype='application/json')    
         elif request.method=='POST':
@@ -47,6 +49,8 @@ def reqcounter():
 @app.route("/api/v1/_count", methods=['DELETE'])
 def reqcounter1():
     with reqcount.get_lock():
+        if crash==1:
+            response = app.response_class(response=json.dumps({}), status=405, mimetype='application/json')    
         if request.method== 'DELETE':
             reqcount.value=0
             response = app.response_class(response=json.dumps({}), status=200, mimetype='application/json')      
