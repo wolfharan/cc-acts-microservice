@@ -16,7 +16,7 @@ app = Flask(__name__, static_url_path='/static')
 mydb = mysql.connector.connect(host ="db", port = 3306, user = 'root', password = 'root', database = 'selflessacts1')
 mycursor = mydb.cursor(buffered=True)
 reqcount=Value('i',0)
-
+crash=0
 
 @app.route(/api/v1/_health, methods=['GET'])
 def healthcheck():
@@ -26,6 +26,12 @@ def healthcheck():
         response=app.response_class(response=json.dumps({}),status=500,mimetype='application/json')
     return response
 
+@app.route(/api/v1/_crash,methods=['GET'])
+def crashserver():
+    global crash
+    crash=1
+    response=app.response_class(response=json.dumps({}),status=500,mimetype='application/json')
+    return response
 
 
 @app.route("/api/v1/_count", methods=['GET'])
