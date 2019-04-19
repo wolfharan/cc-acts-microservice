@@ -17,6 +17,17 @@ mydb = mysql.connector.connect(host ="db", port = 3306, user = 'root', password 
 mycursor = mydb.cursor(buffered=True)
 reqcount=Value('i',0)
 
+
+@app.route(/api/v1/_health, methods=['GET'])
+def healthcheck():
+    if(mydb.is_connected()):
+        response=app.response_class(response=json.dumps({}),status=200,mimetype='application/json')
+    else:
+        response=app.response_class(response=json.dumps({}),status=500,mimetype='application/json')
+    return response
+
+
+
 @app.route("/api/v1/_count", methods=['GET'])
 def reqcounter():
     with reqcount.get_lock():
