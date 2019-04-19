@@ -36,9 +36,10 @@ def crashserver():
 
 @app.route("/api/v1/_count", methods=['GET'])
 def reqcounter():
+    if crash==1:
+        response = app.response_class(response=json.dumps({}), status=500, mimetype='application/json')
+        return response    	
     with reqcount.get_lock():
-        if crash==1:
-            response = app.response_class(response=json.dumps({}), status=500, mimetype='application/json')
         if request.method== 'GET':
             response = app.response_class(response=json.dumps([reqcount.value]), status=200, mimetype='application/json')    
         elif request.method=='POST':
@@ -48,9 +49,10 @@ def reqcounter():
 
 @app.route("/api/v1/_count", methods=['DELETE'])
 def reqcounter1():
+    if crash==1:
+        response = app.response_class(response=json.dumps({}), status=500, mimetype='application/json')
+        return response
     with reqcount.get_lock():
-        if crash==1:
-            response = app.response_class(response=json.dumps({}), status=405, mimetype='application/json')    
         if request.method== 'DELETE':
             reqcount.value=0
             response = app.response_class(response=json.dumps({}), status=200, mimetype='application/json')      
@@ -68,6 +70,9 @@ def index():
 #list all categories
 @app.route('/api/v1/categories', methods = ['GET'])
 def listallcat():
+    if crash==1:
+        response = app.response_class(response=json.dumps({}), status=500, mimetype='application/json')
+        return response	
     with reqcount.get_lock():
         reqcount.value=reqcount.value+1
         print("alert listallcatcount acts",reqcount,file=sys.stderr)
@@ -89,6 +94,9 @@ def listallcat():
 #Add a category
 @app.route('/api/v1/categories', methods = ['POST'])
 def addcat():
+    if crash==1:
+        response = app.response_class(response=json.dumps({}), status=500, mimetype='application/json')
+        return response
     with reqcount.get_lock():
         reqcount.value=reqcount.value+1
         print("alert countaddcat acts",reqcount,file=sys.stderr)
@@ -114,6 +122,9 @@ def addcat():
 #Remove a category
 @app.route('/api/v1/categories/<categoryName>', methods = ['DELETE'])
 def removeacat(categoryName):
+    if crash==1:
+        response = app.response_class(response=json.dumps({}), status=500, mimetype='application/json')
+        return response
     with reqcount.get_lock():
         print("alert countremcatgory acts ",reqcount,file=sys.stderr)
         if request.method == 'DELETE':
@@ -139,6 +150,9 @@ def removeacat(categoryName):
 #List acts of categories(<100)
 @app.route('/api/v1/categories/<categoryName>/acts', methods = ['GET'])
 def listactscat(categoryName):
+    if crash==1:
+        response = app.response_class(response=json.dumps({}), status=500, mimetype='application/json')
+        return response
     with reqcount.get_lock():
         reqcount.value=reqcount.value+1
         print("alert countactscat acts",reqcount,file=sys.stderr)
@@ -167,6 +181,9 @@ def listactscat(categoryName):
 #list # acts of a category
 @app.route('/api/v1/categories/<categoryName>/acts/size', methods = ['GET'])
 def listnoactscat(categoryName):
+    if crash==1:
+        response = app.response_class(response=json.dumps({}), status=500, mimetype='application/json')
+        return response
     with reqcount.get_lock():
         reqcount.value=reqcount.value+1
         print("alert countgetcat acts",reqcount,file=sys.stderr)
@@ -191,6 +208,9 @@ def listnoactscat(categoryName):
 #return # acts for a category in given range
 @app.route('/api/v1/categories/<categoryName>/acts?start=<startRange>&end=<endRange>', methods = ['GET'])
 def noactcatrange(categoryName):
+    if crash==1:
+        response = app.response_class(response=json.dumps({}), status=500, mimetype='application/json')
+        return response
     with reqcount.get_lock():
         reqcount.value=reqcount.value+1
         print("alert countcatran acts",reqcount,file=sys.stderr)
@@ -221,6 +241,9 @@ def noactcatrange(categoryName):
 #Upvote an Act
 @app.route('/api/v1/acts/upvote', methods = ['POST'])
 def upvoteact():
+    if crash==1:
+        response = app.response_class(response=json.dumps({}), status=500, mimetype='application/json')
+        return response
     with reqcount.get_lock():
         reqcount.value=reqcount.value+1
         print("alert countrem acts",reqcount,file=sys.stderr)
@@ -245,6 +268,9 @@ def upvoteact():
 #Remove an act
 @app.route('/api/v1/acts/<actid>', methods = ['DELETE'])
 def removeact(actid):
+    if crash==1:
+        response = app.response_class(response=json.dumps({}), status=500, mimetype='application/json')
+        return response
     with reqcount.get_lock():
         reqcount.value=reqcount.value+1
         print("alert countrem acts",reqcount,file=sys.stderr)
@@ -269,6 +295,9 @@ def removeact(actid):
 #Upload an Act
 @app.route('/api/v1/acts', methods = ['POST'])
 def uploadact():
+    if crash==1:
+        response = app.response_class(response=json.dumps({}), status=500, mimetype='application/json')
+        return response
     with reqcount.get_lock():
         reqcount.value=reqcount.value+1
         print("alert countupload acts",reqcount,file=sys.stderr)
@@ -324,6 +353,9 @@ def uploadact():
 
 @app.route('/api/v1/acts/count',methods=['GET'])
 def getcountacts():
+    if crash==1:
+        response = app.response_class(response=json.dumps({}), status=500, mimetype='application/json')
+        return response
     with reqcount.get_lock():
         reqcount.value=reqcount.value+1
         print("alert countgetacts acts",reqcount,file=sys.stderr)
