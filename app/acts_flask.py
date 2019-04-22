@@ -1,3 +1,4 @@
+
 from __future__ import print_function
 from multiprocessing import Value
 from flask import Flask, render_template, request, json, jsonify
@@ -18,7 +19,7 @@ mycursor = mydb.cursor(buffered=True)
 reqcount=Value('i',0)
 crash=0
 
-@app.route(/api/v1/_health, methods=['GET'])
+@app.route("/api/v1/_health", methods=['GET'])
 def healthcheck():
     if(mydb.is_connected()):
         response=app.response_class(response=json.dumps({}),status=200,mimetype='application/json')
@@ -26,7 +27,7 @@ def healthcheck():
         response=app.response_class(response=json.dumps({}),status=500,mimetype='application/json')
     return response
 
-@app.route(/api/v1/_crash,methods=['GET'])
+@app.route("/api/v1/_crash",methods=['GET'])
 def crashserver():
     global crash
     crash=1
