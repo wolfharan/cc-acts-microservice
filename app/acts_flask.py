@@ -21,17 +21,20 @@ crash=0
 
 @app.route("/api/v1/_health", methods=['GET'])
 def healthcheck():
+    if crash==1:
+        response = app.response_class(response=json.dumps({}), status=500, mimetype='application/json')
+        return response 
     if(mydb.is_connected()):
         response=app.response_class(response=json.dumps({}),status=200,mimetype='application/json')
     else:
         response=app.response_class(response=json.dumps({}),status=500,mimetype='application/json')
     return response
 
-@app.route("/api/v1/_crash",methods=['GET'])
+@app.route("/api/v1/_crash",methods=['POST'])
 def crashserver():
     global crash
     crash=1
-    response=app.response_class(response=json.dumps({}),status=500,mimetype='application/json')
+    response=app.response_class(response=json.dumps({}),status=200,mimetype='application/json')
     return response
 
 
@@ -208,7 +211,7 @@ def listnoactscat(categoryName):
 
 #return # acts for a category in given range
 @app.route('/api/v1/categories/<categoryName>/acts?start=<startRange>&end=<endRange>', methods = ['GET'])
-def noactcatrange(categoryName):
+def noactcatrange(categoryName,startRange,endRange):
     if crash==1:
         response = app.response_class(response=json.dumps({}), status=500, mimetype='application/json')
         return response
@@ -313,9 +316,11 @@ def uploadact():
                 response=app.response_class(response=json.dumps({}), status=400, mimetype='application/json')
                 return response
             except:
-                cat1=mycursor.execute("SELECT catno FROM category WHERE category.catname=%s", (cat, ))
+                print("category sent",cat,file=sys.stderr)
+                cat1=mycursor.execute("SELECT catno FROM category WHERE category.catname=%s", (str(cat), ))
                 cat1=mycursor.fetchone()
-                uarr=requests.get('http://3.83.128.61:80/api/v1/users').content
+                print("category match",cat1,file=sys.stderr)
+                uarr=requests.get('http://3.214.37.57:80/api/v1/users').content
                 uarr=json.loads(uarr)
                 #mycursor.execute("SELECT username FROM users WHERE users.username=%s", (uname, ))
                 #unamecheck=mycursor.fetchone()
@@ -324,6 +329,7 @@ def uploadact():
                     if(uarr[i]==content['username']):
                         unamecheck=True
                         break
+                print("username check",unamecheck,file=sys.stderr)
                 mycursor.execute("SELECT actid FROM acts WHERE actid=%s", (acid, ))
                 acidcheck=mycursor.fetchone()
                 print("cat1",len(cat1))
@@ -333,10 +339,18 @@ def uploadact():
                 try:
                     dateobj=datetime.strptime(content['timestamp'],"%d-%m-%Y:%S-%M-%H")
                 except:
+                    print("Date not proper",file=sys.stderr)
                     response=app.response_class(response=json.dumps({}), status=400, mimetype='application/json')
                     return response
-                if(len(cat1)==1 and unamecheck and acidcheck==None and imgcheck):
-                    print(cat1)
+                try:
+                    print(len(cat1))
+                except:
+                    print("category not proper",file=sys.stederr)
+                    response = app.response_class(response=json.dumps({}), status=400, mimetype='application/json')
+                    return response
+                print("truthvals",len(cat1)==1,unamecheck,acidcheck==None,imgcheck,file=sys.stderr)
+                if(len(cat1)==1 and unamecheck and acidcheck==None):
+                    print("success",file=sys.stderr)
                     cat3 = "INSERT INTO acts (comments,actid,caption,uname,catno1,imgpath,times,votes) VALUES(%s,%s,%s,%s,%s,%s,%s,%s)"
                     mycursor.execute(cat3, ('',content['actId'],content['caption'],content['username'],cat1[0],content['imgB64'],datetime.strptime(content['timestamp'],"%d-%m-%Y:%S-%M-%H")  ,0))
                     cat4= mycursor.execute("UPDATE category SET catcount=catcount +1 WHERE category.catname=%s",(content['categoryName'],))
